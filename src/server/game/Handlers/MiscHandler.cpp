@@ -1066,7 +1066,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPackets::Spells::SetActionBu
         GetPlayer()->addActionButton(packet.Index, action, type);
 }
 
-void WorldSession::HandleCompleteCinematic(WorldPacket& /*recvData*/)
+void WorldSession::HandleCompleteCinematic(WorldPackets::Character::CompleteCinematic& /*packet*/)
 {
     TC_LOG_DEBUG("network", "WORLD: Received CMSG_COMPLETE_CINEMATIC");
 }

@@ -94,6 +94,9 @@ namespace WorldPackets
         class LogoutRequest;
         class LogoutCancel;
         class LoadingScreenNotify;
+        class CompleteCinematic;
+        class OpeningCinematic;
+        class TriggerCinematic;
     }
 
     namespace ClientConfig
@@ -611,7 +614,7 @@ class WorldSession
         void HandleCharRaceOrFactionChangeCallback(PreparedQueryResult result, WorldPackets::Character::CharRaceOrFactionChangeInfo* factionChangeInfo);
         void HandleRandomizeCharNameOpcode(WorldPackets::Character::GenerateRandomCharacterName& packet);
         void HandleReorderCharacters(WorldPackets::Character::ReorderCharacters& reorderChars);
-        void HandleOpeningCinematic(WorldPacket& recvData);
+        void HandleOpeningCinematic(WorldPackets::Character::OpeningCinematic& /*packet*/);
         void HandleUndeleteCooldownStatusQuery(WorldPacket& /*recvData*/);
         void HandleUndeleteCooldownStatusCallback(PreparedQueryResult result);
         void HandleCharUndeleteOpcode(WorldPackets::Character::UndeleteCharacter& undeleteInfo);
@@ -975,7 +978,7 @@ class WorldSession
         void HandleGetChannelMemberCount(WorldPacket& recvPacket);
         void HandleSetChannelWatch(WorldPacket& recvPacket);
 
-        void HandleCompleteCinematic(WorldPacket& recvPacket);
+        void HandleCompleteCinematic(WorldPackets::Character::CompleteCinematic& /*packet*/);
         void HandleNextCinematicCamera(WorldPacket& recvPacket);
 
         void HandlePageTextQueryOpcode(WorldPackets::Query::QueryPageText& packet);

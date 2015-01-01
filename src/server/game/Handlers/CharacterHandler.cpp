@@ -2271,7 +2271,7 @@ void WorldSession::HandleReorderCharacters(WorldPackets::Character::ReorderChara
     CharacterDatabase.CommitTransaction(trans);
 }
 
-void WorldSession::HandleOpeningCinematic(WorldPacket& /*recvData*/)
+void WorldSession::HandleOpeningCinematic(WorldPackets::Character::OpeningCinematic& /*openingCinematic*/)
 {
     // Only players that has not yet gained any experience can use this
     if (_player->GetUInt32Value(PLAYER_XP))

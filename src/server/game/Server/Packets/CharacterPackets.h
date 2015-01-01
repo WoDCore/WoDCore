@@ -473,6 +473,32 @@ namespace WorldPackets
             int32 MapID = -1;
             bool Showing = false;
         };
+
+        class CompleteCinematic final : public ClientPacket
+        {
+        public:
+            CompleteCinematic(WorldPacket&& packet) : ClientPacket(CMSG_COMPLETE_CINEMATIC, std::move(packet)) { }
+
+            void Read() override { }
+        };
+
+        class OpeningCinematic final : public ClientPacket
+        {
+        public:
+            OpeningCinematic(WorldPacket&& packet) : ClientPacket(CMSG_OPENING_CINEMATIC, std::move(packet)) { }
+
+            void Read() override { }
+        };
+
+        class TriggerCinematic final : public ServerPacket
+        {
+        public:
+            TriggerCinematic() : ServerPacket(SMSG_TRIGGER_CINEMATIC, 4) { }
+
+            WorldPacket const* Write() override;
+
+            uint32 CinematicID = 0;
+        };
     }
 }
 

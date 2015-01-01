@@ -377,3 +377,9 @@ void WorldPackets::Character::LoadingScreenNotify::Read()
     _worldPacket >> MapID;
     Showing = _worldPacket.ReadBit();
 }
+
+WorldPacket const* WorldPackets::Character::TriggerCinematic::Write()
+{
+    _worldPacket << uint32(CinematicID);
+    return &_worldPacket;
+}

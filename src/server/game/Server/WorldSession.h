@@ -94,6 +94,7 @@ namespace WorldPackets
         class LogoutRequest;
         class LogoutCancel;
         class LoadingScreenNotify;
+        class RequestPlayedTime;
         class CompleteCinematic;
         class OpeningCinematic;
         class TriggerCinematic;
@@ -192,6 +193,7 @@ namespace WorldPackets
         class QueryNPCText;
         class DBQueryBulk;
         class QueryGameObject;
+        class QueryTime;
     }
 
     namespace Quest
@@ -632,7 +634,7 @@ class WorldSession
         void SendUndeleteCharacterResponse(CharacterUndeleteResult result, WorldPackets::Character::CharacterUndeleteInfo const* undeleteInfo);
 
         // played time
-        void HandlePlayedTime(WorldPacket& recvPacket);
+        void HandleRequestPlayedTime(WorldPackets::Character::RequestPlayedTime& recvPacket);
 
         // new
         void HandleMoveUnRootAck(WorldPacket& recvPacket);
@@ -723,7 +725,7 @@ class WorldSession
         void HandleGameobjectReportUse(WorldPackets::GameObject::GameObjectReportUse& packet);
 
         void HandleNameQueryOpcode(WorldPackets::Query::QueryPlayerName& packet);
-        void HandleQueryTimeOpcode(WorldPacket& recvPacket);
+        void HandleQueryTimeOpcode(WorldPackets::Query::QueryTime& /*packet*/);
         void HandleCreatureQuery(WorldPackets::Query::QueryCreature& packet);
         void HandleDBQueryBulk(WorldPackets::Query::DBQueryBulk& packet);
 

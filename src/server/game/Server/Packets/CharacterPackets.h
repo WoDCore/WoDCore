@@ -474,6 +474,28 @@ namespace WorldPackets
             bool Showing = false;
         };
 
+        class RequestPlayedTime final : public ClientPacket
+        {
+        public:
+            RequestPlayedTime(WorldPacket&& packet) : ClientPacket(CMSG_REQUEST_PLAYED_TIME, std::move(packet)) { }
+
+            void Read() override;
+
+            bool TriggerScriptEvent = false;
+        };
+
+        class PlayedTime final : public ServerPacket
+        {
+        public:
+            PlayedTime() : ServerPacket(SMSG_PLAYED_TIME, 4+4+1) { }
+
+            WorldPacket const* Write() override;
+
+            int32 TotalTime = 0;
+            int32 LevelTime = 0;
+            bool TriggerEvent = false;
+        };
+
         class CompleteCinematic final : public ClientPacket
         {
         public:

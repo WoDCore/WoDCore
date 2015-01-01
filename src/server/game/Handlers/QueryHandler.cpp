@@ -73,17 +73,17 @@ void WorldSession::HandleNameQueryOpcode(WorldPackets::Query::QueryPlayerName& p
     SendNameQueryOpcode(packet.Player);
 }
 
-void WorldSession::HandleQueryTimeOpcode(WorldPacket & /*recvData*/)
+void WorldSession::HandleQueryTimeOpcode(WorldPackets::Query::QueryTime& /*packet*/)
 {
     SendQueryTimeResponse();
 }
 
 void WorldSession::SendQueryTimeResponse()
 {
-    WorldPacket data(SMSG_QUERY_TIME_RESPONSE, 4+4);
-    data << uint32(time(NULL));
-    data << uint32(sWorld->GetNextDailyQuestsResetTime() - time(NULL));
-    SendPacket(&data);
+    WorldPackets::Query::QueryTimeResponse packet;
+    packet.CurrentTime = uint32(time(NULL));
+    packet.TimeOutRequest = int32(sWorld->GetNextDailyQuestsResetTime() - time(NULL));
+    SendPacket(packet.Write());
 }
 
 /// Only _static_ data is sent in this packet !!!

@@ -265,3 +265,11 @@ WorldPacket const* WorldPackets::Query::QueryGameObjectResponse::Write()
 
     return &_worldPacket;
 }
+
+WorldPacket const* WorldPackets::Query::QueryTimeResponse::Write()
+{
+    _worldPacket << CurrentTime;
+    _worldPacket << TimeOutRequest;
+
+    return &_worldPacket;
+}

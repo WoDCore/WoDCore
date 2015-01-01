@@ -1192,16 +1192,13 @@ void WorldSession::HandleSetActionBarToggles(WorldPacket& recvData)
     GetPlayer()->SetByteValue(PLAYER_FIELD_BYTES, 2, actionBar);
 }
 
-void WorldSession::HandlePlayedTime(WorldPacket& recvData)
+void WorldSession::HandleRequestPlayedTime(WorldPackets::Character::RequestPlayedTime& packet)
 {
-    uint8 unk1;
-    recvData >> unk1;                                      // 0 or 1 expected
-
-    WorldPacket data(SMSG_PLAYED_TIME, 4 + 4 + 1);
-    data << uint32(_player->GetTotalPlayedTime());
-    data << uint32(_player->GetLevelPlayedTime());
-    data << uint8(unk1);                                    // 0 - will not show in chat frame
-    SendPacket(&data);
+    WorldPackets::Character::PlayedTime responePacket;
+    responePacket.TotalTime = int32(_player->GetTotalPlayedTime());
+    responePacket.LevelTime = int32(_player->GetLevelPlayedTime());
+    responePacket.TriggerEvent = packet.TriggerScriptEvent;
+    SendPacket(responePacket.Write());
 }
 
 void WorldSession::HandleInspectOpcode(WorldPacket& recvData)

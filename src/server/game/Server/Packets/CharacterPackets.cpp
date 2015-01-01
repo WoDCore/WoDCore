@@ -378,6 +378,20 @@ void WorldPackets::Character::LoadingScreenNotify::Read()
     Showing = _worldPacket.ReadBit();
 }
 
+void WorldPackets::Character::RequestPlayedTime::Read()
+{
+    TriggerScriptEvent = _worldPacket.ReadBit();
+}
+
+WorldPacket const* WorldPackets::Character::PlayedTime::Write()
+{
+    _worldPacket << int32(TotalTime);
+    _worldPacket << int32(LevelTime);
+    _worldPacket.WriteBit(TriggerEvent);
+    _worldPacket.FlushBits();
+    return &_worldPacket;
+}
+
 WorldPacket const* WorldPackets::Character::TriggerCinematic::Write()
 {
     _worldPacket << uint32(CinematicID);

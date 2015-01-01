@@ -440,15 +440,10 @@ void WorldSession::HandleCastSpellOpcode(WorldPackets::Spells::SpellCastRequest&
     spell->prepare(&targets);
 }
 
-void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleCancelCastOpcode(WorldPackets::Spells::CancelCast& packet)
 {
-    uint32 spellId;
-
-    recvPacket.read_skip<uint8>();                          // counter, increments with every CANCEL packet, don't use for now
-    recvPacket >> spellId;
-
     if (_player->IsNonMeleeSpellCast(false))
-        _player->InterruptNonMeleeSpells(false, spellId, false);
+        _player->InterruptNonMeleeSpells(false, packet.SpellID, false);
 }
 
 void WorldSession::HandleCancelAuraOpcode(WorldPackets::Spells::CancelAura& packet)

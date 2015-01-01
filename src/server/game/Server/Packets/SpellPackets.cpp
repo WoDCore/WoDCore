@@ -417,6 +417,12 @@ WorldPacket const* WorldPackets::Spells::SpellGo::Write()
     return &_worldPacket;
 }
 
+void WorldPackets::Spells::CancelCast::Read()
+{
+    _worldPacket >> SpellID;
+    _worldPacket >> CastID;
+}
+
 WorldPacket const* WorldPackets::Spells::LearnedSpells::Write()
 {
     _worldPacket << uint32(SpellID.size());

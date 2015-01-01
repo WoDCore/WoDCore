@@ -140,7 +140,7 @@ enum OpcodeClient : uint32
     CMSG_CALENDAR_UPDATE_EVENT                        = 0xBADD,
     CMSG_CANCEL_AURA                                  = 0x08AE,
     CMSG_CANCEL_AUTO_REPEAT_SPELL                     = 0xBADD,
-    CMSG_CANCEL_CAST                                  = 0xBADD,
+    CMSG_CANCEL_CAST                                  = 0x0071,
     CMSG_CANCEL_CHANNELLING                           = 0xBADD,
     CMSG_CANCEL_GROWTH_AURA                           = 0xBADD,
     CMSG_CANCEL_MOUNT_AURA                            = 0xBADD,

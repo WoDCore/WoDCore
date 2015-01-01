@@ -213,6 +213,7 @@ namespace WorldPackets
         class SpellCastRequest;
         class SetActionButton;
         class CancelAura;
+        class CancelCast;
     }
 
     namespace Talent
@@ -908,7 +909,7 @@ class WorldSession
         void HandleUseItemOpcode(WorldPacket& recvPacket);
         void HandleOpenItemOpcode(WorldPacket& recvPacket);
         void HandleCastSpellOpcode(WorldPackets::Spells::SpellCastRequest& castRequest);
-        void HandleCancelCastOpcode(WorldPacket& recvPacket);
+        void HandleCancelCastOpcode(WorldPackets::Spells::CancelCast& packet);
         void HandleCancelAuraOpcode(WorldPackets::Spells::CancelAura& packet);
         void HandleCancelGrowthAuraOpcode(WorldPacket& recvPacket);
         void HandleCancelAutoRepeatSpellOpcode(WorldPacket& recvPacket);

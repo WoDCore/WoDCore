@@ -170,7 +170,7 @@ namespace WorldPackets
             void Read() override;
 
             ObjectGuid CasterGUID;
-            uint32 SpellID;
+            uint32 SpellID = 0;
         };
 
         struct TargetLocation
@@ -282,6 +282,17 @@ namespace WorldPackets
             WorldPacket const* Write() override;
 
             SpellCastData Cast;
+        };
+
+        class CancelCast final : public ClientPacket
+        {
+        public:
+            CancelCast(WorldPacket&& packet) : ClientPacket(CMSG_CANCEL_CAST, std::move(packet)) { }
+
+            void Read() override;
+
+            uint32 SpellID = 0;
+            uint8 CastID = 0;       ///< Increments with every CANCEL packet, don't use for now
         };
 
         class LearnedSpells final : public ServerPacket

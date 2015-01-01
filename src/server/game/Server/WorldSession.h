@@ -212,6 +212,7 @@ namespace WorldPackets
     {
         class SpellCastRequest;
         class SetActionButton;
+        class CancelAura;
     }
 
     namespace Talent
@@ -634,7 +635,7 @@ class WorldSession
         void SendUndeleteCharacterResponse(CharacterUndeleteResult result, WorldPackets::Character::CharacterUndeleteInfo const* undeleteInfo);
 
         // played time
-        void HandleRequestPlayedTime(WorldPackets::Character::RequestPlayedTime& recvPacket);
+        void HandleRequestPlayedTime(WorldPackets::Character::RequestPlayedTime& playedTimeRequest);
 
         // new
         void HandleMoveUnRootAck(WorldPacket& recvPacket);
@@ -908,7 +909,7 @@ class WorldSession
         void HandleOpenItemOpcode(WorldPacket& recvPacket);
         void HandleCastSpellOpcode(WorldPackets::Spells::SpellCastRequest& castRequest);
         void HandleCancelCastOpcode(WorldPacket& recvPacket);
-        void HandleCancelAuraOpcode(WorldPacket& recvPacket);
+        void HandleCancelAuraOpcode(WorldPackets::Spells::CancelAura& packet);
         void HandleCancelGrowthAuraOpcode(WorldPacket& recvPacket);
         void HandleCancelAutoRepeatSpellOpcode(WorldPacket& recvPacket);
 

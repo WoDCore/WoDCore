@@ -162,6 +162,17 @@ namespace WorldPackets
             MovementInfo movementInfo;
         };
 
+        class CancelAura final : public ClientPacket
+        {
+        public:
+            CancelAura(WorldPacket&& packet) : ClientPacket(CMSG_CANCEL_AURA, std::move(packet)) { }
+
+            void Read() override;
+
+            ObjectGuid CasterGUID;
+            uint32 SpellID;
+        };
+
         struct TargetLocation
         {
             ObjectGuid Transport;

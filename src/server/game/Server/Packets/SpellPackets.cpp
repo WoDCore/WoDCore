@@ -241,6 +241,12 @@ void WorldPackets::Spells::SpellCastRequest::Read()
     }
 }
 
+void WorldPackets::Spells::CancelAura::Read()
+{
+    _worldPacket >> SpellID;
+    _worldPacket >> CasterGUID;
+}
+
 ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Spells::TargetLocation const& targetLocation)
 {
     data << targetLocation.Transport;

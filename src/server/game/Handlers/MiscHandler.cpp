@@ -1192,12 +1192,12 @@ void WorldSession::HandleSetActionBarToggles(WorldPacket& recvData)
     GetPlayer()->SetByteValue(PLAYER_FIELD_BYTES, 2, actionBar);
 }
 
-void WorldSession::HandleRequestPlayedTime(WorldPackets::Character::RequestPlayedTime& packet)
+void WorldSession::HandleRequestPlayedTime(WorldPackets::Character::RequestPlayedTime& playedTimeRequest)
 {
     WorldPackets::Character::PlayedTime responePacket;
     responePacket.TotalTime = int32(_player->GetTotalPlayedTime());
     responePacket.LevelTime = int32(_player->GetLevelPlayedTime());
-    responePacket.TriggerEvent = packet.TriggerScriptEvent;
+    responePacket.TriggerEvent = playedTimeRequest.TriggerScriptEvent;
     SendPacket(responePacket.Write());
 }
 

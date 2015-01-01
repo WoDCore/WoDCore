@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2014 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2015 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -994,12 +994,12 @@ enum ReferAFriendError
     ERR_REFER_A_FRIEND_DIFFERENT_FACTION             = 0x05,
     ERR_REFER_A_FRIEND_NOT_NOW                       = 0x06,
     ERR_REFER_A_FRIEND_GRANT_LEVEL_MAX_I             = 0x07,
-    ERR_REFER_A_FRIEND_NO_TARGET                     = 0x08,
-    ERR_REFER_A_FRIEND_NOT_IN_GROUP                  = 0x09,
-    ERR_REFER_A_FRIEND_SUMMON_LEVEL_MAX_I            = 0x0A,
-    ERR_REFER_A_FRIEND_SUMMON_COOLDOWN               = 0x0B,
-    ERR_REFER_A_FRIEND_INSUF_EXPAN_LVL               = 0x0C,
-    ERR_REFER_A_FRIEND_SUMMON_OFFLINE_S              = 0x0D
+    ERR_REFER_A_FRIEND_SUMMON_LEVEL_MAX_I            = 0x08,
+    ERR_REFER_A_FRIEND_SUMMON_COOLDOWN               = 0x09,
+    ERR_REFER_A_FRIEND_SUMMON_OFFLINE_S              = 0x0A,
+    ERR_REFER_A_FRIEND_INSUF_EXPAN_LVL               = 0x0B,
+    ERR_REFER_A_FRIEND_NOT_IN_LFG                    = 0x0C,
+    ERR_REFER_A_FRIEND_NO_XREALM                     = 0x0D
 };
 
 enum PlayerRestState

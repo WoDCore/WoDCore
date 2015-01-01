@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2014 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2015 TrinityCore <http://www.trinitycore.org/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -31,7 +31,8 @@ void WorldSession::HandleGrantLevel(WorldPacket& recvData)
     Player* target = ObjectAccessor::GetObjectInWorld(guid, _player);
 
     // check cheating
-    uint8 levels = _player->GetGrantableLevels();
+    /* TODO: 6.x update lfg system
+    /*uint8 levels = _player->GetGrantableLevels();
     uint8 error = 0;
     if (!target)
         error = ERR_REFER_A_FRIEND_NO_TARGET;
@@ -57,7 +58,7 @@ void WorldSession::HandleGrantLevel(WorldPacket& recvData)
 
         SendPacket(&data);
         return;
-    }
+    }*/
 
     WorldPacket data2(SMSG_PROPOSE_LEVEL_GRANT, 8);
     data2 << _player->GetPackGUID();

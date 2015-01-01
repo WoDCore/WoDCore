@@ -31,6 +31,19 @@ WorldPacket const* WorldPackets::Combat::AttackStart::Write()
     return &_worldPacket;
 }
 
+WorldPacket const* WorldPackets::Combat::PowerUpdate::Write()
+{
+    _worldPacket << Guid;
+    _worldPacket << int32(Powers.size());
+    for (WorldPackets::Combat::PowerUpdatePower const& updatePower : Powers)
+    {
+        _worldPacket << updatePower.Power;
+        _worldPacket << updatePower.PowerType;
+    }
+
+    return &_worldPacket;
+}
+
 WorldPacket const* WorldPackets::Combat::SAttackStop::Write()
 {
     _worldPacket << Attacker;

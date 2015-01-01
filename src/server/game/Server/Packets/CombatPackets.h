@@ -54,6 +54,23 @@ namespace WorldPackets
             ObjectGuid Attacker;
             ObjectGuid Victim;
         };
+        
+        struct PowerUpdatePower
+        {
+            int32 Power;
+            uint8 PowerType;
+        };
+
+        class PowerUpdate final : public ServerPacket
+        {
+        public:
+            PowerUpdate() : ServerPacket(SMSG_POWER_UPDATE, 16+4) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid Guid;
+            std::vector<PowerUpdatePower> Powers;
+        };
 
         class SAttackStop final : public ServerPacket
         {

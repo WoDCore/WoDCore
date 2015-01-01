@@ -126,6 +126,7 @@ namespace WorldPackets
     {
         class AttackSwing;
         class AttackStop;
+        class PowerUpdate;
     }
 
     namespace EquipmentSet

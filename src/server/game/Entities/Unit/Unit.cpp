@@ -11402,26 +11402,31 @@ int32 Unit::GetMaxPower(Powers power) const
     return GetInt32Value(UNIT_FIELD_MAXPOWER + powerIndex);
 }
 
-void Unit::SetPower(Powers power, int32 val)
+void Unit::SetPower(Powers power, int32 value)
 {
     uint32 powerIndex = GetPowerIndex(power);
     if (powerIndex == MAX_POWERS)
         return;
 
     int32 maxPower = int32(GetMaxPower(power));
-    if (maxPower < val)
-        val = maxPower;
+    if (maxPower < value)
+        value = maxPower;
 
-    SetInt32Value(UNIT_FIELD_POWER + powerIndex, val);
+    SetInt32Value(UNIT_FIELD_POWER + powerIndex, value);
 
     if (IsInWorld())
     {
-        WorldPacket data(SMSG_POWER_UPDATE, 8 + 4 + 1 + 4);
-        data << GetPackGUID();
-        data << uint32(1); //power count
-        data << uint8(powerIndex);
-        data << int32(val);
-        SendMessageToSet(&data, GetTypeId() == TYPEID_PLAYER);
+        WorldPackets::Combat::PowerUpdate packet;
+
+        packet.Guid = GetGUID();
+        packet.Powers.reserve(1);       // TODO: implement set of power changes
+
+        WorldPackets::Combat::PowerUpdatePower updatePower;
+        updatePower.Power = value;
+        updatePower.PowerType = powerIndex;
+        packet.Powers.push_back(updatePower);
+        
+        SendMessageToSet(packet.Write(), GetTypeId() == TYPEID_PLAYER);
     }
 
     // group update

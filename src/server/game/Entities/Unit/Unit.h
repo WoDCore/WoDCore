@@ -1031,16 +1031,17 @@ struct SpellNonMeleeDamage
 
 struct SpellPeriodicAuraLogInfo
 {
-    SpellPeriodicAuraLogInfo(AuraEffect const* _auraEff, uint32 _damage, uint32 _overDamage, uint32 _absorb, uint32 _resist, float _multiplier, bool _critical)
-        : auraEff(_auraEff), damage(_damage), overDamage(_overDamage), absorb(_absorb), resist(_resist), multiplier(_multiplier), critical(_critical){ }
+    SpellPeriodicAuraLogInfo(AuraEffect const* _effect, int32 _amount, int32 _overHealOrKill, int32 _absorbedOrAmplitude, int32 _resisted, bool _crit, bool _multistrike)
+        : Effect(_effect), Amount(_amount), OverHealOrKill(_overHealOrKill), AbsorbedOrAmplitude(_absorbedOrAmplitude), Resisted(_resisted), Crit(_crit), Multistrike(_multistrike) {}
 
-    AuraEffect const* auraEff;
-    uint32 damage;
-    uint32 overDamage;                                      // overkill/overheal
-    uint32 absorb;
-    uint32 resist;
-    float  multiplier;
-    bool   critical;
+    AuraEffect const* Effect;
+    int32 Amount;
+    int32 OverHealOrKill;
+    //int32 SchoolMaskOrPower;
+    int32 AbsorbedOrAmplitude;
+    int32 Resisted;
+    bool  Crit;
+    bool  Multistrike;
 };
 
 uint32 createProcExtendMask(SpellNonMeleeDamage* damageInfo, SpellMissInfo missCondition);

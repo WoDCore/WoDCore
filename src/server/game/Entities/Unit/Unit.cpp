@@ -4755,48 +4755,62 @@ void Unit::ProcDamageAndSpell(Unit* victim, uint32 procAttacker, uint32 procVict
 
 void Unit::SendPeriodicAuraLog(SpellPeriodicAuraLogInfo* pInfo)
 {
-    AuraEffect const* aura = pInfo->auraEff;
+    AuraEffect const* aura = pInfo->Effect;
 
-    WorldPacket data(SMSG_PERIODICAURALOG, 30);
-    data << GetPackGUID();
-    data << aura->GetCasterGUID().WriteAsPacked();
-    data << uint32(aura->GetId());                          // spellId
-    data << uint32(1);                                      // count
-    data << uint32(aura->GetAuraType());                    // auraId
+    WorldPackets::CombatLog::SpellPeriodicAuraLog packet;
+
+    packet.CasterGUID = aura->GetCasterGUID(); 
+    packet.TargetGUID = GetGUID();
+    packet.SpellID = int32(aura->GetId());
+
+    packet.Entries.reserve(1);
+    //for (ThreatContainer::StorageType::const_iterator itr = tlist.begin(); itr != tlist.end(); ++itr)
+    //{
+
+    WorldPackets::CombatLog::PeriodicAuraLogEffect auraLogEffect;
+
+    auraLogEffect.Effect = aura->GetAuraType();
+
     switch (aura->GetAuraType())
     {
         case SPELL_AURA_PERIODIC_DAMAGE:
         case SPELL_AURA_PERIODIC_DAMAGE_PERCENT:
-            data << uint32(pInfo->damage);                  // damage
-            data << uint32(pInfo->overDamage);              // overkill?
-            data << uint32(aura->GetSpellInfo()->GetSchoolMask());
-            data << uint32(pInfo->absorb);                  // absorb
-            data << uint32(pInfo->resist);                  // resist
-            data << uint8(pInfo->critical);                 // new 3.1.2 critical tick
+            auraLogEffect.Amount = pInfo->Amount;
+            auraLogEffect.OverHealOrKill = pInfo->OverHealOrKill;
+            auraLogEffect.SchoolMaskOrPower = aura->GetSpellInfo()->GetSchoolMask();
+            auraLogEffect.AbsorbedOrAmplitude = pInfo->AbsorbedOrAmplitude;
+            auraLogEffect.Resisted = pInfo->Resisted;
+            auraLogEffect.Crit = pInfo->Crit;
+            auraLogEffect.Multistrike = pInfo->Multistrike;
             break;
         case SPELL_AURA_PERIODIC_HEAL:
         case SPELL_AURA_OBS_MOD_HEALTH:
-            data << uint32(pInfo->damage);                  // damage
-            data << uint32(pInfo->overDamage);              // overheal
-            data << uint32(pInfo->absorb);                  // absorb
-            data << uint8(pInfo->critical);                 // new 3.1.2 critical tick
+            auraLogEffect.Amount = pInfo->Amount;
+            auraLogEffect.OverHealOrKill = pInfo->OverHealOrKill;
+            auraLogEffect.SchoolMaskOrPower = aura->GetSpellInfo()->GetSchoolMask();
+            auraLogEffect.AbsorbedOrAmplitude = pInfo->AbsorbedOrAmplitude;
+            auraLogEffect.Crit = pInfo->Crit;
             break;
         case SPELL_AURA_OBS_MOD_POWER:
         case SPELL_AURA_PERIODIC_ENERGIZE:
-            data << uint32(aura->GetMiscValue());           // power type
-            data << uint32(pInfo->damage);                  // damage
+            auraLogEffect.Amount = pInfo->Amount;
+            auraLogEffect.SchoolMaskOrPower = aura->GetMiscValue();
             break;
         case SPELL_AURA_PERIODIC_MANA_LEECH:
-            data << uint32(aura->GetMiscValue());           // power type
-            data << uint32(pInfo->damage);                  // amount
-            data << float(pInfo->multiplier);               // gain multiplier
+            auraLogEffect.Amount = pInfo->Amount;
+            auraLogEffect.SchoolMaskOrPower = aura->GetMiscValue();
+            //auraLogEffect.Multiplier = float(pInfo->Multiplier); // removed?
             break;
         default:
             TC_LOG_ERROR("entities.unit", "Unit::SendPeriodicAuraLog: unknown aura %u", uint32(aura->GetAuraType()));
             return;
     }
 
-    SendMessageToSet(&data, true);
+    packet.Entries.push_back(auraLogEffect);
+
+    //}
+
+    SendMessageToSet(packet.Write(), true);
 }
 
 void Unit::SendSpellMiss(Unit* target, uint32 spellID, SpellMissInfo missInfo)

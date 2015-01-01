@@ -41,3 +41,39 @@ WorldPacket const* WorldPackets::CombatLog::SpellNonMeleeDamageLog::Write()
 
     return &_worldPacket;
 }
+
+ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::CombatLog::PeriodicAuraLogEffect const& periodicAuraLogEffect)
+{
+    data << periodicAuraLogEffect.Effect;
+    data << periodicAuraLogEffect.Amount;
+    data << periodicAuraLogEffect.OverHealOrKill;
+    data << periodicAuraLogEffect.SchoolMaskOrPower;
+    data << periodicAuraLogEffect.AbsorbedOrAmplitude;
+    data << periodicAuraLogEffect.Resisted;
+
+    data.WriteBit(periodicAuraLogEffect.Crit);
+    data.WriteBit(periodicAuraLogEffect.Multistrike);
+    data.WriteBit(false); // DebugInfo
+    data.FlushBits();
+
+    return data;
+}
+
+WorldPacket const* WorldPackets::CombatLog::SpellPeriodicAuraLog::Write()
+{
+    _worldPacket << TargetGUID;
+    _worldPacket << CasterGUID;
+    _worldPacket << SpellID;
+
+    _worldPacket << int32(Entries.size());
+    for (WorldPackets::CombatLog::PeriodicAuraLogEffect const& effect : Entries)
+        _worldPacket << effect;
+
+    _worldPacket.WriteBit(LogData.HasValue);
+    _worldPacket.FlushBits();
+
+    if (LogData.HasValue)
+        _worldPacket << LogData.Value;
+
+    return &_worldPacket;
+}

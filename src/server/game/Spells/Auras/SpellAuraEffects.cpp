@@ -6028,7 +6028,7 @@ void AuraEffect::HandlePeriodicDamageAurasTick(Unit* target, Unit* caster) const
     if (overkill < 0)
         overkill = 0;
 
-    SpellPeriodicAuraLogInfo pInfo(this, damage, overkill, absorb, resist, 0.0f, crit);
+    SpellPeriodicAuraLogInfo pInfo(this, (int32)damage, overkill, (int32)absorb, (int32)resist, crit, false/*multistrike*/);
     target->SendPeriodicAuraLog(&pInfo);
 
     caster->ProcDamageAndSpell(target, procAttacker, procVictim, procEx, damage, BASE_ATTACK, GetSpellInfo());
@@ -6245,11 +6245,11 @@ void AuraEffect::HandlePeriodicHealAurasTick(Unit* target, Unit* caster) const
         GetCasterGUID().ToString().c_str(), target->GetGUID().ToString().c_str(), damage, GetId());
 
     uint32 absorb = 0;
-    uint32 heal = uint32(damage);
+    uint32 heal = int32(damage);
     caster->CalcHealAbsorb(target, GetSpellInfo(), heal, absorb);
     int32 gain = caster->DealHeal(target, heal);
 
-    SpellPeriodicAuraLogInfo pInfo(this, heal, heal - gain, absorb, 0, 0.0f, crit);
+    SpellPeriodicAuraLogInfo pInfo(this, (int32)heal, (int32)heal - gain, (int32)absorb, 0, crit, false/*multistrike*/);
     target->SendPeriodicAuraLog(&pInfo);
 
     target->getHostileRefManager().threatAssist(caster, float(gain) * 0.5f, GetSpellInfo());
@@ -6319,7 +6319,7 @@ void AuraEffect::HandlePeriodicManaLeechAuraTick(Unit* target, Unit* caster) con
 
     float gainMultiplier = GetSpellEffectInfo()->CalcValueMultiplier(caster);
 
-    SpellPeriodicAuraLogInfo pInfo(this, drainedAmount, 0, 0, 0, gainMultiplier, false);
+    SpellPeriodicAuraLogInfo pInfo(this, drainedAmount, 0, 0, 0, false, false);
     target->SendPeriodicAuraLog(&pInfo);
 
     int32 gainAmount = int32(drainedAmount * gainMultiplier);
@@ -6372,7 +6372,7 @@ void AuraEffect::HandleObsModPowerAuraTick(Unit* target, Unit* caster) const
     TC_LOG_INFO("spells", "PeriodicTick: %s energize %s for %u dmg inflicted by %u",
         GetCasterGUID().ToString().c_str(), target->GetGUID().ToString().c_str(), amount, GetId());
 
-    SpellPeriodicAuraLogInfo pInfo(this, amount, 0, 0, 0, 0.0f, false);
+    SpellPeriodicAuraLogInfo pInfo(this, (int32)amount, 0, 0, 0, false, false);
     target->SendPeriodicAuraLog(&pInfo);
 
     int32 gain = target->ModifyPower(powerType, amount);
@@ -6404,7 +6404,7 @@ void AuraEffect::HandlePeriodicEnergizeAuraTick(Unit* target, Unit* caster) cons
     // ignore negative values (can be result apply spellmods to aura damage
     int32 amount = std::max(m_amount, 0);
 
-    SpellPeriodicAuraLogInfo pInfo(this, amount, 0, 0, 0, 0.0f, false);
+    SpellPeriodicAuraLogInfo pInfo(this, amount, 0, 0, 0, false, false);
     target->SendPeriodicAuraLog(&pInfo);
 
     TC_LOG_INFO("spells", "PeriodicTick: %s energize %s for %u dmg inflicted by %u",

@@ -46,7 +46,36 @@ namespace WorldPackets
             int32 Flags = 0;
             int32 Overkill = 0;
         };
+
+        struct PeriodicAuraLogEffect
+        {
+            int32 Effect = 0;
+            int32 Amount = 0;
+            int32 OverHealOrKill = 0;
+            int32 SchoolMaskOrPower = 0;
+            int32 AbsorbedOrAmplitude = 0;
+            int32 Resisted = 0;
+            bool Crit = false;
+            bool Multistrike = false;
+            // Optional<AuraLogEffectDebugInfo> DebugInfo;
+        };
+
+        class SpellPeriodicAuraLog final : public ServerPacket
+        {
+        public:
+            SpellPeriodicAuraLog() : ServerPacket(SMSG_PERIODICAURALOG, 60) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid CasterGUID;
+            ObjectGuid TargetGUID;
+            int32 SpellID = 0;
+            std::vector<PeriodicAuraLogEffect> Entries;
+            Optional<Spells::SpellCastLogData> LogData;
+        };
     }
 }
+
+ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::CombatLog::PeriodicAuraLogEffect const& periodicAuraLogEffect);
 
 #endif // CombatLogPackets_h__

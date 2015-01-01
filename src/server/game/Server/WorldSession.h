@@ -176,6 +176,7 @@ namespace WorldPackets
         class ClientPlayerMovement;
         class WorldPortAck;
         class MoveTeleportAck;
+        class SetActiveMover;
     }
 
     namespace NPC
@@ -732,7 +733,7 @@ class WorldSession
         void HandleMoveWorldportAckOpcode();                // for server-side calls
 
         void HandleMovementOpcodes(WorldPackets::Movement::ClientPlayerMovement& packet);
-        void HandleSetActiveMoverOpcode(WorldPacket& recvData);
+        void HandleSetActiveMoverOpcode(WorldPackets::Movement::SetActiveMover& packet);
         void HandleMoveNotActiveMover(WorldPacket& recvData);
         void HandleDismissControlledVehicle(WorldPacket& recvData);
         void HandleRequestVehicleExit(WorldPacket& recvData);

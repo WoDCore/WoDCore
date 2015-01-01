@@ -285,6 +285,16 @@ namespace WorldPackets
             int32 AckIndex = 0;
             int32 MoveTime = 0;
         };
+
+        class SetActiveMover final : public ClientPacket
+        {
+        public:
+            SetActiveMover(WorldPacket&& packet) : ClientPacket(CMSG_SET_ACTIVE_MOVER, std::move(packet)) { }
+
+            void Read() override;
+
+            ObjectGuid ActiveMover;
+        };
     }
 }
 

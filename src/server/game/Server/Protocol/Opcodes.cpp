@@ -593,7 +593,7 @@ void OpcodeTable::Initialize()
     DEFINE_OPCODE_HANDLER_OLD(CMSG_SETSHEATHED,                             STATUS_UNHANDLED, PROCESS_INPLACE,      &WorldSession::HandleSetSheathedOpcode         );
     DEFINE_OPCODE_HANDLER_OLD(CMSG_SET_ACTIONBAR_TOGGLES,                   STATUS_UNHANDLED, PROCESS_THREADUNSAFE, &WorldSession::HandleSetActionBarToggles       );
     DEFINE_HANDLER(CMSG_SET_ACTION_BUTTON,                                  STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, WorldPackets::Spells::SetActionButton, &WorldSession::HandleSetActionButtonOpcode);
-    DEFINE_OPCODE_HANDLER_OLD(CMSG_SET_ACTIVE_MOVER,                        STATUS_UNHANDLED, PROCESS_THREADUNSAFE, &WorldSession::HandleSetActiveMoverOpcode      );
+    DEFINE_HANDLER(CMSG_SET_ACTIVE_MOVER,                                   STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, WorldPackets::Movement::SetActiveMover, &WorldSession::HandleSetActiveMoverOpcode);
     DEFINE_OPCODE_HANDLER_OLD(CMSG_SET_ACTIVE_VOICE_CHANNEL,                STATUS_UNHANDLED, PROCESS_THREADUNSAFE, &WorldSession::HandleSetActiveVoiceChannel     ); // STATUS_AUTHED
     DEFINE_OPCODE_HANDLER_OLD(CMSG_SET_ALLOW_LOW_LEVEL_RAID1,               STATUS_UNHANDLED, PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     DEFINE_OPCODE_HANDLER_OLD(CMSG_SET_ALLOW_LOW_LEVEL_RAID2,               STATUS_UNHANDLED, PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );

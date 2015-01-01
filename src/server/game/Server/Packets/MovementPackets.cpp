@@ -605,3 +605,8 @@ void WorldPackets::Movement::MoveTeleportAck::Read()
     _worldPacket >> AckIndex;
     _worldPacket >> MoveTime;
 }
+
+void WorldPackets::Movement::SetActiveMover::Read()
+{
+    _worldPacket >> ActiveMover;
+}

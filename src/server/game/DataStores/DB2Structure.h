@@ -41,7 +41,7 @@ struct BroadcastTextEntry
     uint32 EmoteID[MAX_BROADCAST_TEXT_EMOTES];
     uint32 EmoteDelay[MAX_BROADCAST_TEXT_EMOTES];
     uint32 SoundID;
-    uint32 UnkEmoteID;
+    uint32 EndEmoteID;
     uint32 Type;
 };
 

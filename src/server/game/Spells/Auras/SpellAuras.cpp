@@ -185,53 +185,61 @@ void AuraApplication::_HandleEffect(uint8 effIndex, bool apply)
     SetNeedClientUpdate();
 }
 
-void AuraApplication::BuildUpdatePacket(ByteBuffer& data, bool remove) const
+void AuraApplication::BuildUpdatePacket(WorldPackets::Spells::AuraInfo& auraInfo, bool remove) const
 {
-    data << uint8(_slot);
+    ASSERT((_target->GetVisibleAura(_slot) != nullptr) ^ remove);
 
+    auraInfo.Slot = GetSlot();
     if (remove)
-    {
-        ASSERT(!_target->GetVisibleAura(_slot));
-        data << uint32(0);
         return;
-    }
-    ASSERT(_target->GetVisibleAura(_slot));
 
     Aura const* aura = GetBase();
-    data << uint32(aura->GetId());
-    uint8 flags = _flags;
+
+    WorldPackets::Spells::AuraDataInfo auraData;
+    auraData.SpellID = aura->GetId();
+    auraData.Flags = GetFlags();
     if (aura->GetMaxDuration() > 0 && !(aura->GetSpellInfo()->AttributesEx5 & SPELL_ATTR5_HIDE_DURATION))
-        flags |= AFLAG_DURATION;
-    data << uint16(flags);
-    data << uint8(aura->GetCasterLevel());
+        auraData.Flags |= AFLAG_DURATION;
+
+    auraData.ActiveFlags = GetEffectMask();
+    auraData.CastLevel = aura->GetCasterLevel();
+
     // send stack amount for aura which could be stacked (never 0 - causes incorrect display) or charges
     // stack amount has priority over charges (checked on retail with spell 50262)
-    data << uint8(aura->GetSpellInfo()->StackAmount ? aura->GetStackAmount() : aura->GetCharges());
+    auraData.Applications = aura->GetSpellInfo()->StackAmount ? aura->GetStackAmount() : aura->GetCharges();
+    if (!(auraData.Flags & AFLAG_NOCASTER))
+        auraData.CastUnit.Set(aura->GetCasterGUID());
 
-    if (!(flags & AFLAG_NOCASTER))
-        data << aura->GetCasterGUID().WriteAsPacked();
-
-    if (flags & AFLAG_DURATION)
+    if (auraData.Flags & AFLAG_DURATION)
     {
-        data << uint32(aura->GetMaxDuration());
-        data << uint32(aura->GetDuration());
+        auraData.Duration.Set(aura->GetMaxDuration());
+        auraData.Remaining.Set(aura->GetDuration());
     }
 
-    if (flags & AFLAG_SCALABLE)
+    if (auraData.Flags & AFLAG_SCALABLE)
+    {
+        auraData.Points.reserve(aura->GetAuraEffects().size());
         for (AuraEffect const* effect : GetBase()->GetAuraEffects())
             if (effect && HasEffect(effect->GetEffIndex()))       // Not all of aura's effects have to be applied on every target
-                data << int32(effect->GetAmount());
+                auraData.Points.push_back(float(effect->GetAmount()));
+    }
+
+    auraInfo.AuraData.Set(auraData);
 }
 
 void AuraApplication::ClientUpdate(bool remove)
 {
     _needClientUpdate = false;
 
-    WorldPackets::Spells::SendAuraUpdate update;
-    update.Init(false, GetTarget()->GetGUID(), 1);
-    update.BuildUpdatePacket(this, remove, GetTarget()->getLevel()); // TODO 6.x should be caster's level
+    WorldPackets::Spells::AuraUpdate update;
+    update.UpdateAll = false;
+    update.UnitGUID = GetTarget()->GetGUID();
 
-    _target->SendMessageToSet(const_cast<WorldPacket*>(update.Write()), true);
+    WorldPackets::Spells::AuraInfo auraInfo;
+    BuildUpdatePacket(auraInfo, remove);
+    update.Auras.push_back(auraInfo);
+
+    _target->SendMessageToSet(update.Write(), true);
 }
 
 uint32 Aura::BuildEffectMaskForOwner(SpellInfo const* spellProto, uint32 avalibleEffectMask, WorldObject* owner)
@@ -787,7 +795,7 @@ void Aura::RefreshDuration(bool withMods)
     {
         int32 duration = m_spellInfo->GetMaxDuration();
         // Calculate duration of periodics affected by haste.
-        if (GetCaster()->HasAuraTypeWithAffectMask(SPELL_AURA_PERIODIC_HASTE, m_spellInfo) || m_spellInfo->AttributesEx5 & SPELL_ATTR5_HASTE_AFFECT_DURATION)
+        if (GetCaster()->HasAuraTypeWithAffectMask(SPELL_AURA_PERIODIC_HASTE, m_spellInfo) || m_spellInfo->HasAttribute(SPELL_ATTR5_HASTE_AFFECT_DURATION))
             duration = int32(duration * GetCaster()->GetFloatValue(UNIT_MOD_CAST_SPEED));
 
         SetMaxDuration(duration);
@@ -804,7 +812,7 @@ void Aura::RefreshTimers()
 {
     m_maxDuration = CalcMaxDuration();
     bool resetPeriodic = true;
-    if (m_spellInfo->AttributesEx8 & SPELL_ATTR8_DONT_RESET_PERIODIC_TIMER)
+    if (m_spellInfo->HasAttribute(SPELL_ATTR8_DONT_RESET_PERIODIC_TIMER))
     {
         int32 minPeriod = m_maxDuration;
         for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
@@ -1686,7 +1694,7 @@ bool Aura::CanStackWith(Aura const* existingAura) const
         if (existingAura->GetSpellInfo()->IsChanneled())
             return true;
 
-        if (m_spellInfo->AttributesEx3 & SPELL_ATTR3_STACK_FOR_DIFF_CASTERS)
+        if (m_spellInfo->HasAttribute(SPELL_ATTR3_STACK_FOR_DIFF_CASTERS))
             return true;
 
         // check same periodic auras
@@ -1744,7 +1752,7 @@ bool Aura::CanStackWith(Aura const* existingAura) const
         if (m_spellInfo->IsMultiSlotAura() && !IsArea())
             return true;
         if (!GetCastItemGUID().IsEmpty() && !existingAura->GetCastItemGUID().IsEmpty())
-            if (GetCastItemGUID() != existingAura->GetCastItemGUID() && (m_spellInfo->AttributesCu & SPELL_ATTR0_CU_ENCHANT_PROC))
+            if (GetCastItemGUID() != existingAura->GetCastItemGUID() && (m_spellInfo->HasAttribute(SPELL_ATTR0_CU_ENCHANT_PROC)))
                 return true;
         // same spell with same caster should not stack
         return false;

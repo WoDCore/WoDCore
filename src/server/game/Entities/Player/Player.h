@@ -177,17 +177,19 @@ struct SpellModifier
 
 enum PlayerCurrencyState
 {
-   PLAYERCURRENCY_UNCHANGED = 0,
-   PLAYERCURRENCY_CHANGED   = 1,
-   PLAYERCURRENCY_NEW       = 2,
-   PLAYERCURRENCY_REMOVED   = 3     //not removed just set count == 0
+    PLAYERCURRENCY_UNCHANGED = 0,
+    PLAYERCURRENCY_CHANGED = 1,
+    PLAYERCURRENCY_NEW = 2,
+    PLAYERCURRENCY_REMOVED = 3     //not removed just set count == 0
 };
 
 struct PlayerCurrency
 {
-   PlayerCurrencyState state;
-   uint32 totalCount;
-   uint32 weekCount;
+    PlayerCurrencyState state;
+    uint32 Quantity;
+    uint32 WeeklyQuantity;
+    uint32 TrackedQuantity;
+    uint8 Flags;
 };
 
 typedef std::unordered_map<uint32, PlayerTalent*> PlayerTalentMap;
@@ -1489,7 +1491,7 @@ class Player : public Unit, public GridObject<Player>
 
           * @param  id currency entry from CurrencyTypes.dbc
           * @param  count integer value for adding/removing curent currency
-          * @param  printLog used on SMSG_UPDATE_CURRENCY
+          * @param  printLog used on SMSG_SET_CURRENCY
           * @param  ignore gain multipliers
         */
         void ModifyCurrency(uint32 id, int32 count, bool printLog = true, bool ignoreMultipliers = false);
@@ -1940,8 +1942,8 @@ class Player : public Unit, public GridObject<Player>
         uint8 getCinematic() { return m_cinematic; }
         void setCinematic(uint8 cine) { m_cinematic = cine; }
 
-        ActionButton* addActionButton(uint8 button, uint32 action, uint8 type);
-        void removeActionButton(uint8 button);
+        ActionButton* AddActionButton(uint8 button, uint32 action, uint8 type);
+        void RemoveActionButton(uint8 button);
         ActionButton const* GetActionButton(uint8 button);
         void SendInitialActionButtons() const { SendActionButtons(0); }
         void SendActionButtons(uint32 state) const;
@@ -2086,7 +2088,7 @@ class Player : public Unit, public GridObject<Player>
         WorldSession* GetSession() const { return m_session; }
 
         void BuildCreateUpdateBlockForPlayer(UpdateData* data, Player* target) const override;
-        void DestroyForPlayer(Player* target, bool onDeath = false) const override;
+        void DestroyForPlayer(Player* target) const override;
         void SendLogXPGain(uint32 GivenXP, Unit* victim, uint32 BonusXP, bool recruitAFriend = false, float group_rate=1.0f);
 
         // notifiers

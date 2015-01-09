@@ -64,6 +64,21 @@ namespace WorldPackets
             int32 GameTimeHolidayOffset = 0;
         };
 
+        class SetCurrency final : public ServerPacket
+        {
+        public:
+            SetCurrency() : ServerPacket(SMSG_SET_CURRENCY, 12) { }
+
+            WorldPacket const* Write() override;
+
+            bool SuppressChatLog = false;
+            Optional<int32> TrackedQuantity;
+            int32 Quantity = 0;
+            uint32 Flags = 0;
+            int32 Type = 0;
+            Optional<int32> WeeklyQuantity;
+        };
+
         class SetSelection final : public ClientPacket
         {
         public:
@@ -72,6 +87,26 @@ namespace WorldPackets
             void Read() override;
 
             ObjectGuid Selection; ///< Target
+        };
+
+        class SetupCurrency final : public ServerPacket
+        {
+        public:
+            struct Record
+            {
+                int32 Type = 0;                       // ID from CurrencyTypes.dbc
+                int32 Quantity = 0;
+                Optional<int32> WeeklyQuantity;       // Currency count obtained this Week.  
+                Optional<int32> MaxWeeklyQuantity;    // Weekly Currency cap.
+                Optional<int32> TrackedQuantity;
+                uint8 Flags = 0;                      // 0 = none, 
+            };
+
+            SetupCurrency() : ServerPacket(SMSG_SETUP_CURRENCY, 22) { }
+
+            WorldPacket const* Write() override;
+
+            std::vector<Record> Data;
         };
 
         class ViolenceLevel final : public ClientPacket
@@ -103,6 +138,26 @@ namespace WorldPackets
 
             uint32 ClientTime = 0; // Client ticks in ms
             uint32 SequenceIndex = 0; // Same index as in request
+        };
+
+        class TriggerCinematic final : public ServerPacket
+        {
+        public:
+            TriggerCinematic() : ServerPacket(SMSG_TRIGGER_CINEMATIC, 4) { }
+
+            WorldPacket const* Write() override;
+
+            uint32 CinematicID = 0;
+        };
+
+        class TriggerMovie final : public ServerPacket
+        {
+        public:
+            TriggerMovie() : ServerPacket(SMSG_TRIGGER_MOVIE, 4) { }
+
+            WorldPacket const* Write() override;
+
+            uint32 MovieID = 0;
         };
 
         class UITime final : public ServerPacket

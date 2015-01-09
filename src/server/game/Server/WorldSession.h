@@ -35,6 +35,7 @@
 #include "AccountMgr.h"
 #include <unordered_set>
 
+class Channel;
 class Creature;
 class GameObject;
 class InstanceSave;
@@ -47,6 +48,7 @@ class SpellCastTargets;
 class Unit;
 class Warden;
 class WorldPacket;
+class WorldSession;
 class WorldSocket;
 struct AreaTableEntry;
 struct AuctionEntry;
@@ -108,7 +110,7 @@ namespace WorldPackets
 
     namespace Channel
     {
-        class ChannelListRequest;
+        class ChannelPlayerCommand;
         class JoinChannel;
         class LeaveChannel;
     }
@@ -170,6 +172,10 @@ namespace WorldPackets
 
     namespace Item
     {
+        class BuyBackItem;
+        class ItemRefundInfo;
+        class RepairItem;
+        class SellItem;
         class SplitItem;
         class SwapInvItem;
         class SwapItem;
@@ -690,7 +696,7 @@ class WorldSession
         void HandleShowingCloakOpcode(WorldPacket& recvData);
 
         // repair
-        void HandleRepairItemOpcode(WorldPacket& recvPacket);
+        void HandleRepairItemOpcode(WorldPackets::Item::RepairItem& packet);
 
         // Knockback
         void HandleMoveKnockBackAck(WorldPacket& recvPacket);
@@ -914,7 +920,7 @@ class WorldSession
         void HandleSwapInvItemOpcode(WorldPackets::Item::SwapInvItem& swapInvItem);
         void HandleDestroyItemOpcode(WorldPackets::Item::DestroyItem& destroyItem);
         void HandleAutoEquipItemOpcode(WorldPackets::Item::AutoEquipItem& autoEquipItem);
-        void HandleSellItemOpcode(WorldPacket& recvPacket);
+        void HandleSellItemOpcode(WorldPackets::Item::SellItem& packet);
         void HandleBuyItemInSlotOpcode(WorldPacket& recvPacket);
         void HandleBuyItemOpcode(WorldPacket& recvPacket);
         void HandleListInventoryOpcode(WorldPackets::NPC::Hello& packet);
@@ -922,7 +928,7 @@ class WorldSession
         void HandleReadItem(WorldPacket& recvPacket);
         void HandleAutoEquipItemSlotOpcode(WorldPacket& recvPacket);
         void HandleSwapItem(WorldPackets::Item::SwapItem& swapItem);
-        void HandleBuybackItem(WorldPacket& recvPacket);
+        void HandleBuybackItem(WorldPackets::Item::BuyBackItem& packet);
         void HandleAutoBankItemOpcode(WorldPacket& recvPacket);
         void HandleAutoStoreBankItemOpcode(WorldPacket& recvPacket);
         void HandleWrapItemOpcode(WorldPacket& recvPacket);
@@ -990,23 +996,15 @@ class WorldSession
 
         void HandleJoinChannel(WorldPackets::Channel::JoinChannel& packet);
         void HandleLeaveChannel(WorldPackets::Channel::LeaveChannel& packet);
-        void HandleChannelList(WorldPackets::Channel::ChannelListRequest& packet);
-        void HandleChannelPassword(WorldPacket& recvPacket);
-        void HandleChannelSetOwner(WorldPacket& recvPacket);
-        void HandleChannelOwner(WorldPacket& recvPacket);
-        void HandleChannelModerator(WorldPacket& recvPacket);
-        void HandleChannelUnmoderator(WorldPacket& recvPacket);
-        void HandleChannelMute(WorldPacket& recvPacket);
-        void HandleChannelUnmute(WorldPacket& recvPacket);
-        void HandleChannelInvite(WorldPacket& recvPacket);
-        void HandleChannelKick(WorldPacket& recvPacket);
-        void HandleChannelBan(WorldPacket& recvPacket);
-        void HandleChannelUnban(WorldPacket& recvPacket);
-        void HandleChannelAnnouncements(WorldPacket& recvPacket);
-        void HandleChannelModerate(WorldPacket& recvPacket);
-        void HandleChannelDeclineInvite(WorldPacket& recvPacket);
-        void HandleGetChannelMemberCount(WorldPacket& recvPacket);
-        void HandleSetChannelWatch(WorldPacket& recvPacket);
+
+        template<void(Channel::*CommandFunction)(Player const*)>
+        void HandleChannelCommand(WorldPackets::Channel::ChannelPlayerCommand& packet);
+
+        template<void(Channel::*CommandFunction)(Player const*, std::string const&)>
+        void HandleChannelPlayerCommand(WorldPackets::Channel::ChannelPlayerCommand& packet);
+
+        void HandleVoiceSessionEnableOpcode(WorldPacket& recvData);
+        void HandleSetActiveVoiceChannel(WorldPacket& recvData);
 
         void HandleCompleteCinematic(WorldPackets::Character::CompleteCinematic& /*packet*/);
         void HandleNextCinematicCamera(WorldPacket& recvPacket);
@@ -1128,12 +1126,9 @@ class WorldSession
 
         void HandleCancelTempEnchantmentOpcode(WorldPacket& recvData);
 
-        void HandleItemRefundInfoRequest(WorldPacket& recvData);
+        void HandleItemRefundInfoRequest(WorldPackets::Item::ItemRefundInfo& packet);
         void HandleItemRefund(WorldPacket& recvData);
 
-        void HandleChannelVoiceOnOpcode(WorldPacket& recvData);
-        void HandleVoiceSessionEnableOpcode(WorldPacket& recvData);
-        void HandleSetActiveVoiceChannel(WorldPacket& recvData);
         void HandleSetTaxiBenchmarkOpcode(WorldPacket& recvData);
 
         // Guild Bank
@@ -1329,5 +1324,6 @@ class WorldSession
         WorldSession(WorldSession const& right) = delete;
         WorldSession& operator=(WorldSession const& right) = delete;
 };
+
 #endif
 /// @}

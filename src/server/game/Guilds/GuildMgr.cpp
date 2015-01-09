@@ -199,8 +199,8 @@ void GuildMgr::LoadGuilds()
 
                                                 //           0           1        2     3      4        5       6       7       8       9       10
         QueryResult result = CharacterDatabase.Query("SELECT gm.guildid, gm.guid, rank, pnote, offnote, w.tab0, w.tab1, w.tab2, w.tab3, w.tab4, w.tab5, "
-                                                //    11      12      13       14      15       16       17      18         19
-                                                     "w.tab6, w.tab7, w.money, c.name, c.level, c.class, c.zone, c.account, c.logout_time "
+                                                //    11      12      13       14      15       16       17        18      19         20
+                                                     "w.tab6, w.tab7, w.money, c.name, c.level, c.class, c.gender, c.zone, c.account, c.logout_time "
                                                      "FROM guild_member gm "
                                                      "LEFT JOIN guild_member_withdraw w ON gm.guid = w.guid "
                                                      "LEFT JOIN characters c ON c.guid = gm.guid ORDER BY gm.guildid ASC");
@@ -518,8 +518,8 @@ void GuildMgr::LoadGuildRewards()
 {
     uint32 oldMSTime = getMSTime();
 
-    //                                                 0     1         2         3      4
-    QueryResult result  = WorldDatabase.Query("SELECT entry, standing, racemask, price, achievement FROM guild_rewards");
+    //                                                 0      1            2         3      4
+    QueryResult result  = WorldDatabase.Query("SELECT ItemID, MinGuildRep, RaceMask, Cost, AchievementsRequired FROM guild_rewards");
 
     if (!result)
     {
@@ -533,27 +533,35 @@ void GuildMgr::LoadGuildRewards()
     {
         GuildReward reward;
         Field* fields = result->Fetch();
-        reward.Entry         = fields[0].GetUInt32();
-        reward.Standing      = fields[1].GetUInt8();
-        reward.Racemask      = fields[2].GetInt32();
-        reward.Price         = fields[3].GetUInt64();
-        reward.AchievementId = fields[4].GetUInt32();
-
-        if (!sObjectMgr->GetItemTemplate(reward.Entry))
+        reward.ItemID = fields[0].GetUInt32();
+        reward.MinGuildRep = fields[1].GetUInt8();
+        reward.RaceMask  = fields[2].GetInt32();
+        reward.Cost = fields[3].GetUInt64();
+        std::string const requiredAchievements = fields[4].GetString();
+        
+        Tokenizer Tokenizer(requiredAchievements, ' ');
+        for (Tokenizer::const_iterator iter = Tokenizer.begin(); iter != Tokenizer.end(); ++iter)
         {
-            TC_LOG_ERROR("server.loading", "Guild rewards constains not existing item entry %u", reward.Entry);
+            uint32 requiredAchievementId = atoul(*iter);
+
+            if (!sAchievementMgr->GetAchievement(requiredAchievementId))
+            {
+                TC_LOG_ERROR("server.loading", "Guild rewards constains not existing achievement entry %u", requiredAchievementId);
+                continue;
+            }
+
+            reward.AchievementsRequired.push_back(requiredAchievementId);
+        }
+
+        if (!sObjectMgr->GetItemTemplate(reward.ItemID))
+        {
+            TC_LOG_ERROR("server.loading", "Guild rewards constains not existing item entry %u", reward.ItemID);
             continue;
         }
 
-        if (reward.AchievementId != 0 && (!sAchievementMgr->GetAchievement(reward.AchievementId)))
+        if (reward.MinGuildRep >= MAX_REPUTATION_RANK)
         {
-            TC_LOG_ERROR("server.loading", "Guild rewards constains not existing achievement entry %u", reward.AchievementId);
-            continue;
-        }
-
-        if (reward.Standing >= MAX_REPUTATION_RANK)
-        {
-            TC_LOG_ERROR("server.loading", "Guild rewards contains wrong reputation standing %u, max is %u", uint32(reward.Standing), MAX_REPUTATION_RANK - 1);
+            TC_LOG_ERROR("server.loading", "Guild rewards contains wrong reputation standing %u, max is %u", uint32(reward.MinGuildRep), MAX_REPUTATION_RANK - 1);
             continue;
         }
 

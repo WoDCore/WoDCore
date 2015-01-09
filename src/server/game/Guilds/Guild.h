@@ -146,21 +146,21 @@ enum GuildEvents
 {
     GE_PROMOTION                        = 1,
     GE_DEMOTION                         = 2,
-    GE_MOTD                             = 3,
-    GE_JOINED                           = 4,
-    GE_LEFT                             = 5,
-    GE_REMOVED                          = 6,
+    //GE_MOTD                             = 3,
+    //GE_JOINED                           = 4,
+    //GE_LEFT                             = 5,
+    //GE_REMOVED                          = 6,
     GE_LEADER_IS                        = 7,
-    GE_LEADER_CHANGED                   = 8,
-    GE_DISBANDED                        = 9,
+    //GE_LEADER_CHANGED                   = 8,
+    //GE_DISBANDED                        = 9,
     GE_TABARDCHANGE                     = 10,
     GE_RANK_UPDATED                     = 11,
     GE_RANK_CREATED                     = 12,
     GE_RANK_DELETED                     = 13,
     GE_RANK_ORDER_CHANGED               = 14,
     GE_FOUNDER                          = 15,
-    GE_SIGNED_ON                        = 16,
-    GE_SIGNED_OFF                       = 17,
+    //GE_SIGNED_ON                        = 16,
+    //GE_SIGNED_OFF                       = 17,
     GE_GUILDBANKBAGSLOTS_CHANGED        = 18,
     GE_BANK_TAB_PURCHASED               = 19,
     GE_BANK_TAB_UPDATED                 = 20,
@@ -259,11 +259,11 @@ enum GuildNews
 
 struct GuildReward
 {
-    uint32 Entry;
-    int32 Racemask;
-    uint64 Price;
-    uint32 AchievementId;
-    uint8 Standing;
+    uint32 ItemID;
+    int32 RaceMask;
+    uint64 Cost;
+    std::vector<uint32> AchievementsRequired;
+    uint8 MinGuildRep;
 };
 
 uint32 const MinNewsItemLevel[MAX_CONTENT] = { 61, 90, 200, 353 };
@@ -345,6 +345,7 @@ private:
             m_zoneId(0),
             m_level(0),
             m_class(0),
+            _gender(0),
             m_flags(GUILDMEMBER_STATUS_NONE),
             m_logoutTime(::time(NULL)),
             m_accountId(0),
@@ -359,7 +360,7 @@ private:
         }
 
         void SetStats(Player* player);
-        void SetStats(std::string const& name, uint8 level, uint8 _class, uint32 zoneId, uint32 accountId, uint32 reputation);
+        void SetStats(std::string const& name, uint8 level, uint8 _class, uint8 gender, uint32 zoneId, uint32 accountId, uint32 reputation);
         bool CheckStats() const;
 
         void SetPublicNote(std::string const& publicNote);
@@ -385,6 +386,7 @@ private:
         std::string GetPublicNote() const { return m_publicNote; }
         std::string GetOfficerNote() const { return m_officerNote; }
         uint8 GetClass() const { return m_class; }
+        uint8 GetGender() const { return _gender; }
         uint8 GetLevel() const { return m_level; }
         uint8 GetFlags() const { return m_flags; }
         uint32 GetZoneId() const { return m_zoneId; }
@@ -422,6 +424,7 @@ private:
         uint32 m_zoneId;
         uint8 m_level;
         uint8 m_class;
+        uint8 _gender;
         uint8 m_flags;
         uint64 m_logoutTime;
         uint32 m_accountId;
@@ -810,7 +813,7 @@ public:
     void HandleMemberDepositMoney(WorldSession* session, uint64 amount, bool cashFlow = false);
     bool HandleMemberWithdrawMoney(WorldSession* session, uint64 amount, bool repair = false);
     void HandleMemberLogout(WorldSession* session);
-    void HandleDisband(WorldSession* session);
+    void HandleDelete(WorldSession* session);
     void HandleGuildPartyRequest(WorldSession* session);
     void HandleNewsSetSticky(WorldSession* session, uint32 newsId, bool sticky);
     void HandleGuildRequestChallengeUpdate(WorldSession* session);
@@ -829,6 +832,13 @@ public:
     void SendMoneyInfo(WorldSession* session) const;
     void SendLoginInfo(WorldSession* session);
     void SendNewsUpdate(WorldSession* session);
+
+    // Send events
+    void SendEventBankMoneyChanged();
+    void SendEventMOTD(WorldSession* session, bool broadcast = false);
+    void SendEventNewLeader(Member* newLeader, Member* oldLeader, bool isSelfPromoted = false);
+    void SendEventPlayerLeft(Player* leaver, Player* remover = nullptr, bool isRemoved = false);
+    void SendEventPresenceChanged(WorldSession* session, bool loggedOn, bool broadcast = false);
 
     // Load from DB
     bool LoadFromDB(Field* fields);

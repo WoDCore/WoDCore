@@ -2229,9 +2229,11 @@ void Guild::SendMoneyInfo(WorldSession* session) const
         return;
 
     int32 amount = _GetMemberRemainingMoney(member);
-    WorldPacket data(SMSG_GUILD_BANK_MONEY_WITHDRAWN, 8);
-    data << int64(amount);
-    session->SendPacket(&data);
+
+    WorldPackets::Guild::GuildBankRemainingWithdrawMoney packet;
+    packet.RemainingWithdrawMoney = uint64(amount);
+    session->SendPacket(packet.Write());
+
     TC_LOG_DEBUG("guild", "SMSG_GUILD_BANK_MONEY_WITHDRAWN [%s] Money: %u", session->GetPlayerInfo().c_str(), amount);
 }
 
@@ -2262,6 +2264,13 @@ void Guild::SendLoginInfo(WorldSession* session)
 
     WorldPackets::Guild::GuildMemberDailyReset packet; // tells the client to request bank withdrawal limit
     player->GetSession()->SendPacket(packet.Write());
+
+    if (member->GetGUID() == GetLeaderGUID())
+    {
+        WorldPackets::Guild::GuildFlaggedForRename renameFlag;
+        renameFlag.FlagSet = false;
+        player->GetSession()->SendPacket(renameFlag.Write());
+    }
 
     if (!sWorld->getBoolConfig(CONFIG_GUILD_LEVELING_ENABLED))
         return;
@@ -3383,7 +3392,7 @@ void Guild::_BroadcastEvent(GuildEvents guildEvent, ObjectGuid guid, const char*
         TC_LOG_DEBUG("guild", "SMSG_GUILD_EVENT [Broadcast] Event: %s (%u)", _GetGuildEventString(guildEvent).c_str(), guildEvent);
 }
 
-void Guild::SendBankList(WorldSession* session, uint8 tabId, bool withContent, bool withTabInfo) const
+void Guild::SendBankList(WorldSession* session, uint8 tabId, bool fullUpdate) const
 {
     Member const* member = GetMember(session->GetPlayer()->GetGUID());
     if (!member) // Shouldn't happen, just in case
@@ -3394,7 +3403,7 @@ void Guild::SendBankList(WorldSession* session, uint8 tabId, bool withContent, b
     packet.Money = uint64(m_bankMoney);
     packet.WithdrawalsRemaining = int32(_GetMemberRemainingSlots(member, tabId));
     packet.Tab = int32(tabId);
-    packet.FullUpdate = false;
+    packet.FullUpdate = fullUpdate;
 
     // TabInfo
     packet.TabInfo.reserve(_GetPurchasedTabsSize());
@@ -3409,7 +3418,7 @@ void Guild::SendBankList(WorldSession* session, uint8 tabId, bool withContent, b
 
     // ItemInfo
     uint32 itemCount = 0;
-    if (withContent && _MemberHasTabRights(session->GetPlayer()->GetGUID(), tabId, GUILD_BANK_RIGHT_VIEW_TAB))
+    if (fullUpdate && _MemberHasTabRights(session->GetPlayer()->GetGUID(), tabId, GUILD_BANK_RIGHT_VIEW_TAB))
         if (BankTab const* tab = GetBankTab(tabId))
             for (uint8 slotId = 0; slotId < GUILD_BANK_MAX_SLOTS; ++slotId)
                 if (tab->GetItem(slotId))
@@ -3417,7 +3426,7 @@ void Guild::SendBankList(WorldSession* session, uint8 tabId, bool withContent, b
 
     packet.ItemInfo.reserve(itemCount);
     
-    if (withContent && _MemberHasTabRights(session->GetPlayer()->GetGUID(), tabId, GUILD_BANK_RIGHT_VIEW_TAB))
+    if (fullUpdate && _MemberHasTabRights(session->GetPlayer()->GetGUID(), tabId, GUILD_BANK_RIGHT_VIEW_TAB))
     {
         if (BankTab const* tab = GetBankTab(tabId))
         {

@@ -393,6 +393,19 @@ void WorldPackets::Guild::GuildPromoteMember::Read()
     _worldPacket >> Promotee;
 }
 
+void WorldPackets::Guild::GuildChangeNameRequest::Read()
+{
+    uint32 nameLen = _worldPacket.ReadBits(7);
+    NewName = _worldPacket.ReadString(nameLen);
+}
+
+WorldPacket const* WorldPackets::Guild::GuildFlaggedForRename::Write()
+{
+    _worldPacket.WriteBit(FlagSet);
+
+    return &_worldPacket;
+}
+
 void WorldPackets::Guild::RequestGuildPartyState::Read()
 {
     _worldPacket >> GuildGUID;
@@ -452,10 +465,42 @@ WorldPacket const* WorldPackets::Guild::GuildBankTextQueryResult::Write()
     return &_worldPacket;
 }
 
+void WorldPackets::Guild::GuildBankActivate::Read()
+{
+    _worldPacket >> Banker;
+    FullUpdate = _worldPacket.ReadBit();
+}
+
 void WorldPackets::Guild::GuildBankBuyTab::Read()
 {
     _worldPacket >> Banker;
     _worldPacket >> BankTab;
+}
+
+void WorldPackets::Guild::GuildBankDepositMoney::Read()
+{
+    _worldPacket >> Banker;
+    _worldPacket >> Money;
+}
+
+void WorldPackets::Guild::GuildBankQueryTab::Read()
+{
+    _worldPacket >> Banker;
+    _worldPacket >> Tab;
+    FullUpdate = _worldPacket.ReadBit();
+}
+
+WorldPacket const* WorldPackets::Guild::GuildBankRemainingWithdrawMoney::Write()
+{
+    _worldPacket << RemainingWithdrawMoney;
+
+    return &_worldPacket;
+}
+
+void WorldPackets::Guild::GuildBankWithdrawMoney::Read()
+{
+    _worldPacket >> Banker;
+    _worldPacket >> Money;
 }
 
 WorldPacket const* WorldPackets::Guild::GuildBankQueryResults::Write()

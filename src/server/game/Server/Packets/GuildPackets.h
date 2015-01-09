@@ -497,6 +497,26 @@ namespace WorldPackets
             void Read() override { }
         };
 
+        class GuildChangeNameRequest final : public ClientPacket
+        {
+        public:
+            GuildChangeNameRequest(WorldPacket&& packet) : ClientPacket(CMSG_GUILD_CHANGE_NAME_REQUEST, std::move(packet)) { }
+
+            void Read() override;
+
+            std::string NewName;
+        };
+
+        class GuildFlaggedForRename final : public ServerPacket
+        {
+        public:
+            GuildFlaggedForRename() : ServerPacket(SMSG_GUILD_FLAGGED_FOR_RENAME, 1) { }
+
+            WorldPacket const* Write() override;
+
+            bool FlagSet = false;
+        };
+
         class RequestGuildPartyState final : public ClientPacket
         {
         public:
@@ -561,7 +581,18 @@ namespace WorldPackets
             int32 Tab = 0;
             std::string Text;
         };
-        
+
+        class GuildBankActivate final : public ClientPacket
+        {
+        public:
+            GuildBankActivate(WorldPacket&& packet) : ClientPacket(CMSG_GUILD_BANKER_ACTIVATE, std::move(packet)) { }
+
+            void Read() override;
+
+            ObjectGuid Banker;
+            bool FullUpdate = false;
+        };
+
         class GuildBankBuyTab final : public ClientPacket
         {
         public:
@@ -571,6 +602,59 @@ namespace WorldPackets
 
             ObjectGuid Banker;
             uint8 BankTab = 0;
+        };
+
+        class GuildBankDepositMoney final : public ClientPacket
+        {
+        public:
+            GuildBankDepositMoney(WorldPacket&& packet) : ClientPacket(CMSG_GUILD_BANK_DEPOSIT_MONEY, std::move(packet)) { }
+
+            void Read() override;
+
+            ObjectGuid Banker;
+            uint64 Money = 0;
+        };
+
+        class GuildBankQueryTab final : public ClientPacket
+        {
+        public:
+            GuildBankQueryTab(WorldPacket&& packet) : ClientPacket(CMSG_GUILD_BANK_QUERY_TAB, std::move(packet)) { }
+
+            void Read() override;
+
+            ObjectGuid Banker;
+            uint8 Tab = 0;
+            bool FullUpdate = false;
+        };
+
+
+        class GuildBankRemainingWithdrawMoneyQuery final : public ClientPacket
+        {
+        public:
+            GuildBankRemainingWithdrawMoneyQuery(WorldPacket&& packet) : ClientPacket(CMSG_GUILD_BANK_MONEY_WITHDRAWN_QUERY, std::move(packet)) { }
+
+            void Read() override { }
+        };
+
+        class GuildBankRemainingWithdrawMoney final : public ServerPacket
+        {
+        public:
+            GuildBankRemainingWithdrawMoney() : ServerPacket(SMSG_GUILD_BANK_MONEY_WITHDRAWN, 8) { }
+
+            WorldPacket const* Write() override;
+
+            uint64 RemainingWithdrawMoney = 0;
+        };
+
+        class GuildBankWithdrawMoney final : public ClientPacket
+        {
+        public:
+            GuildBankWithdrawMoney(WorldPacket&& packet) : ClientPacket(CMSG_GUILD_BANK_WITHDRAW_MONEY, std::move(packet)) { }
+
+            void Read() override;
+
+            ObjectGuid Banker;
+            uint64 Money = 0;
         };
 
         class GuildBankQueryResults final : public ServerPacket

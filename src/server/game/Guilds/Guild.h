@@ -65,25 +65,40 @@ enum GuildDefaultRanks
 
 enum GuildRankRights
 {
-    GR_RIGHT_EMPTY                      = 0x00000040,
-    GR_RIGHT_GCHATLISTEN                = GR_RIGHT_EMPTY | 0x00000001,
-    GR_RIGHT_GCHATSPEAK                 = GR_RIGHT_EMPTY | 0x00000002,
-    GR_RIGHT_OFFCHATLISTEN              = GR_RIGHT_EMPTY | 0x00000004,
-    GR_RIGHT_OFFCHATSPEAK               = GR_RIGHT_EMPTY | 0x00000008,
-    GR_RIGHT_INVITE                     = GR_RIGHT_EMPTY | 0x00000010,
-    GR_RIGHT_REMOVE                     = GR_RIGHT_EMPTY | 0x00000020,
-    GR_RIGHT_PROMOTE                    = GR_RIGHT_EMPTY | 0x00000080,
-    GR_RIGHT_DEMOTE                     = GR_RIGHT_EMPTY | 0x00000100,
-    GR_RIGHT_SETMOTD                    = GR_RIGHT_EMPTY | 0x00001000,
-    GR_RIGHT_EPNOTE                     = GR_RIGHT_EMPTY | 0x00002000,
-    GR_RIGHT_VIEWOFFNOTE                = GR_RIGHT_EMPTY | 0x00004000,
-    GR_RIGHT_EOFFNOTE                   = GR_RIGHT_EMPTY | 0x00008000,
-    GR_RIGHT_MODIFY_GUILD_INFO          = GR_RIGHT_EMPTY | 0x00010000,
+    GR_RIGHT_EMPTY                      = 0x00000000,
+    GR_RIGHT_GCHATLISTEN                = 0x00000001,
+    GR_RIGHT_GCHATSPEAK                 = 0x00000002,
+    GR_RIGHT_OFFCHATLISTEN              = 0x00000004,
+    GR_RIGHT_OFFCHATSPEAK               = 0x00000008,
+    GR_RIGHT_INVITE                     = 0x00000010,
+    GR_RIGHT_REMOVE                     = 0x00000020,
+    GR_RIGHT_ROSTER                     = 0x00000040,
+    GR_RIGHT_PROMOTE                    = 0x00000080,
+    GR_RIGHT_DEMOTE                     = 0x00000100,
+    GR_RIGHT_UNK_1                      = 0x00000200,
+    GR_RIGHT_UNK_2                      = 0x00000400,
+    GR_RIGHT_UNK_3                      = 0x00000800,
+    GR_RIGHT_SETMOTD                    = 0x00001000,
+    GR_RIGHT_EPNOTE                     = 0x00002000,
+    GR_RIGHT_VIEWOFFNOTE                = 0x00004000,
+    GR_RIGHT_EOFFNOTE                   = 0x00008000,
+    GR_RIGHT_MODIFY_GUILD_INFO          = 0x00010000,
     GR_RIGHT_WITHDRAW_GOLD_LOCK         = 0x00020000,                   // remove money withdraw capacity
     GR_RIGHT_WITHDRAW_REPAIR            = 0x00040000,                   // withdraw for repair
     GR_RIGHT_WITHDRAW_GOLD              = 0x00080000,                   // withdraw gold
     GR_RIGHT_CREATE_GUILD_EVENT         = 0x00100000,                   // wotlk
-    GR_RIGHT_ALL                        = 0x00DDFFBF
+    GR_RIGHT_IN_AUTHENTICATED_RANK      = 0x00200000,
+    GR_RIGHT_EDIT_GUILD_BANK_TAB_INFO   = 0x00400000,
+    GR_RIGHT_REMOVE_GUILD_EVENT         = 0x00800000,
+    GR_RIGHT_UNK_4                      = 0x01000000,
+    GR_RIGHT_UNK_5                      = 0x02000000,
+    GR_RIGHT_UNK_6                      = 0x04000000,
+    GR_RIGHT_UNK_7                      = 0x08000000,
+    GR_RIGHT_UNK_8                      = 0x10000000,
+    GR_RIGHT_UNK_9                      = 0x20000000,
+    GR_RIGHT_UNK_10                     = 0x40000000,
+    GR_RIGHT_UNK_11                     = 0x80000000,
+    GR_RIGHT_ALL                        = 0xFFFFFFFF
 };
 
 enum GuildCommandType
@@ -825,7 +840,7 @@ public:
     void SendGuildRankInfo(WorldSession* session) const;
     void SendEventLog(WorldSession* session) const;
     void SendBankLog(WorldSession* session, uint8 tabId) const;
-    void SendBankList(WorldSession* session, uint8 tabId, bool withContent, bool withTabInfo) const;
+    void SendBankList(WorldSession* session, uint8 tabId, bool fullUpdate) const;
     void SendGuildXP(WorldSession* session = NULL) const;
     void SendBankTabText(WorldSession* session, uint8 tabId) const;
     void SendPermissions(WorldSession* session) const;

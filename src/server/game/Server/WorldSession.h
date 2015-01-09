@@ -151,7 +151,12 @@ namespace WorldPackets
         class AcceptGuildInvite;
         class GuildAddRank;
         class GuildAssignMemberRank;
+        class GuildBankActivate;
         class GuildBankBuyTab;
+        class GuildBankDepositMoney;
+        class GuildBankQueryTab;
+        class GuildBankRemainingWithdrawMoneyQuery;
+        class GuildBankWithdrawMoney;
         class GuildDeclineInvitation;
         class GuildDelete;
         class GuildDeleteRank;
@@ -1132,13 +1137,13 @@ class WorldSession
         void HandleSetTaxiBenchmarkOpcode(WorldPacket& recvData);
 
         // Guild Bank
-        void HandleGuildPermissions(WorldPackets::Guild::GuildPermissionsQuery& recvData);
-        void HandleGuildBankMoneyWithdrawn(WorldPacket& recvData);
-        void HandleGuildBankerActivate(WorldPacket& recvData);
-        void HandleGuildBankQueryTab(WorldPacket& recvData);
+        void HandleGuildPermissions(WorldPackets::Guild::GuildPermissionsQuery& packet);
+        void HandleGuildBankMoneyWithdrawn(WorldPackets::Guild::GuildBankRemainingWithdrawMoneyQuery& packet);
+        void HandleGuildBankerActivate(WorldPackets::Guild::GuildBankActivate& packet);
+        void HandleGuildBankQueryTab(WorldPackets::Guild::GuildBankQueryTab& packet);
         void HandleGuildBankLogQuery(WorldPacket& recvData);
-        void HandleGuildBankDepositMoney(WorldPacket& recvData);
-        void HandleGuildBankWithdrawMoney(WorldPacket& recvData);
+        void HandleGuildBankDepositMoney(WorldPackets::Guild::GuildBankDepositMoney& packet);
+        void HandleGuildBankWithdrawMoney(WorldPackets::Guild::GuildBankWithdrawMoney& recvData);
         void HandleGuildBankSwapItems(WorldPacket& recvData);
 
         void HandleGuildBankUpdateTab(WorldPacket& recvData);
